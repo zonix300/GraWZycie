@@ -5,11 +5,7 @@
 #include <time.h>
 
 #define WIDTH 100
-#define HEIGHT 100
-
-ALLEGRO_DISPLAY* global_display;
-ALLEGRO_EVENT_QUEUE* global_queue;
-ALLEGRO_TIMER* global_timer;
+#define HEIGHT 90
 
 typedef enum {
 	DEAD, 
@@ -21,16 +17,7 @@ typedef struct {
 } Cell;
 
 
-
-
-void init_logic(ALLEGRO_DISPLAY* display,
-				ALLEGRO_EVENT_QUEUE* queue,
-				ALLEGRO_TIMER* timer) {
-	global_display = display;
-	global_queue = queue;
-	global_timer = timer;
-}
-void init_grid(Cell grid[HEIGHT][WIDTH]){
+void init_grid(Cell grid[HEIGHT][WIDTH]) {
 	srand(time(0));
 	for (size_t i = 0; i < HEIGHT; i++) {
 		for (size_t j = 0; j < WIDTH; j++) {
@@ -48,18 +35,23 @@ void init_grid(Cell grid[HEIGHT][WIDTH]){
 
 void draw_grid(Cell grid[HEIGHT][WIDTH]) {
 	for (size_t i = 0; i < HEIGHT; i++) {
-		for (size_t j = 0; j < WIDTH; j++)
-		{
-			if (grid[i][j].state == ALIVE)
-			{
-				al_draw_filled_rectangle(j * 5, i * 5, (j + 1) * 5, (i + 1) * 5, al_map_rgb(255, 255, 255));
+		for (size_t j = 0; j < WIDTH; j++) {
+			if (grid[i][j].state == ALIVE) {
+				al_draw_filled_rectangle(j * 10, i * 10, (j + 1) * 10, (i + 1) * 10, al_map_rgb(255, 255, 255));
 			}
-			if (grid[i][j].state == DEAD)
-			{
-				al_draw_filled_rectangle(j * 5, i * 5, (j + 1) * 5, (i + 1) * 5, al_map_rgb(0, 0, 0));
+			if (grid[i][j].state == DEAD) {
+				al_draw_filled_rectangle(j * 10, i * 10, (j + 10) * 10, (i + 1) * 10, al_map_rgb(0, 0, 0));
 			}
 		}
 	}
+
+	for (size_t i = 0; i <= WIDTH; i++) {
+		al_draw_line(i * 10, 0, i * 10, (WIDTH-10) * 10, al_map_rgb(150, 150, 150), 1);
+	}
+	for (size_t i = 0; i <= HEIGHT; i++) {
+		al_draw_line(0, i * 10, HEIGHT * 10, i * 10, al_map_rgb(150, 150, 150), 1);
+	}
+	
 }
 
 void next_generation(Cell grid[HEIGHT][WIDTH]) {
@@ -71,14 +63,8 @@ void next_generation(Cell grid[HEIGHT][WIDTH]) {
 			for (int k = -1; k <= 1; k++) {
 				for (int l = -1; l <= 1; l++) {
 					if (k == 0 && l == 0) continue;
-					int row = (i + k) % HEIGHT;
-					int col = (j + l) % HEIGHT;
-					if (i + k >= HEIGHT) {
-						row = 0;
-					}
-					if (j + l >= WIDTH) {
-						col = 0;
-					}
+					int row = (i + k + HEIGHT) % HEIGHT;
+					int col = (j + l + HEIGHT) % HEIGHT;
 					if (grid[row][col].state == ALIVE) {
 						alive_cells++;
 					}
